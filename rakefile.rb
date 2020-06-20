@@ -41,17 +41,6 @@ DEBUG = true
 # optimization
 OPT = '-Og'
 
-#######################################
-# paths
-#######################################
-# Build path
-BUILD_DIR = 'build'
-
-DEBUG_DIR = 'debug'
-RELEASE_DIR = 'release'
-DEP_DIR = 'dep'
-
-
 C_SOURCES = Rake::FileList[
   'Src/**/*.c',
   'Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_ll_utils.c',
@@ -121,8 +110,8 @@ LDSCRIPT = 'STM32F303RETx_FLASH.ld'
 # libraries
 LIBS = '-lc -lm -lnosys'
 LIBDIR = ''
-LDFLAGS = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/#{DEBUG_DIR}/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
-LDFLAGS_rlse = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/#{RELEASE_DIR}/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
+LDFLAGS = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/debug/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
+LDFLAGS_rlse = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/release/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
 SOURCE_FILES = C_SOURCES + ASM_SOURCES
 
 # Create a mapping from all dependencies to their source files.
@@ -148,15 +137,15 @@ namespace :debug do
 
   desc "Generates the flash image from ELF format"
   task :image => :link do |task|
-    sh "#{HEX} build/#{DEBUG_DIR}/#{PROJECT[:name]}.elf build/#{DEBUG_DIR}/#{PROJECT[:name]}.hex"
+    sh "#{HEX} build/debug/#{PROJECT[:name]}.elf build/debug/#{PROJECT[:name]}.hex"
   end
 
   desc "Link the object files"
   task :link => DEP_HASH[:debug][:obj_path].keys do |task|
     obj = DEP_HASH[:debug][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    sh "#{CC} #{obj} #{mcu_args} #{LDFLAGS} -o build/#{DEBUG_DIR}/#{PROJECT[:name]}.elf"
-    sh "#{SZ} build/#{DEBUG_DIR}/#{PROJECT[:name]}.elf"
+    sh "#{CC} #{obj} #{mcu_args} #{LDFLAGS} -o build/debug/#{PROJECT[:name]}.elf"
+    sh "#{SZ} build/debug/#{PROJECT[:name]}.elf"
   end
 
   rule %r{/debug/obj/\w+\.o} => get_src_path do |task|
@@ -188,15 +177,15 @@ namespace :release do
 
   desc "Generates the flash image from ELF format"
   task :image => :link do |task|
-    sh "#{HEX} build/#{RELEASE_DIR}/#{PROJECT[:name]}.elf build/#{RELEASE_DIR}/#{PROJECT[:name]}.hex"
+    sh "#{HEX} build/release/#{PROJECT[:name]}.elf build/release/#{PROJECT[:name]}.hex"
   end
 
   desc "Link the object files"
   task :link => DEP_HASH[:release][:obj_path].keys do |task|
     obj = DEP_HASH[:release][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    sh "#{CC} #{obj} #{mcu_args} #{LDFLAGS_rlse} -o build/#{RELEASE_DIR}/#{PROJECT[:name]}.elf"
-    sh "#{SZ} build/#{RELEASE_DIR}/#{PROJECT[:name]}.elf"
+    sh "#{CC} #{obj} #{mcu_args} #{LDFLAGS_rlse} -o build/release/#{PROJECT[:name]}.elf"
+    sh "#{SZ} build/release/#{PROJECT[:name]}.elf"
   end
 
   rule %r{/release/obj/\w+\.o} => get_src_path do |task|
@@ -239,6 +228,6 @@ CLEAN.include(
   DEP_HASH[:release][:mf_path].keys, 
   DEP_HASH[:debug][:obj_path].keys, 
   DEP_HASH[:release][:obj_path].keys, 
-  "build/#{DEBUG_DIR}/#{PROJECT[:name]}.*", 
-  "build/#{RELEASE_DIR}/#{PROJECT[:name]}.*"
+  "build/debug/#{PROJECT[:name]}.*", 
+  "build/release/#{PROJECT[:name]}.*"
 )
