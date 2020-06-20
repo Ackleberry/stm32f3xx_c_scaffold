@@ -1,0 +1,38 @@
+{
+    "configurations": [
+        {
+            "name": "ArmDevelopment",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\Users\\banderson\\Documents\\StmDevelopment\\ArmToolchain\\9 2020-q2-update\\lib\\gcc\\arm-none-eabi\\9.3.1\\**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "USE_FULL_LL_DRIVER",
+                "HSE_VALUE=8000000",
+                "HSE_STARTUP_TIMEOUT=100",
+                "LSE_STARTUP_TIMEOUT=5000",
+                "LSE_VALUE=32768",
+                "EXTERNAL_CLOCK_VALUE=8000000",
+                "HSI_VALUE=8000000",
+                "LSI_VALUE=40000",
+                "VDD_VALUE=3300",
+                "PREFETCH_ENABLE=1",
+                "STM32F303xE"
+            ],
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "C:\\Users\\banderson\\Documents\\StmDevelopment\\ArmToolchain\\9 2020-q2-update\\bin\\arm-none-eabi-gcc.exe",
+            "compilerArgs": [],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "cStandard": "c99"
+        }
+    ],
+    "version": 4
+}
