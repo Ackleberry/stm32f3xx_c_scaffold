@@ -103,6 +103,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    for (volatile uint32_t i = 0; i < 1000000; i++){}
+    LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
