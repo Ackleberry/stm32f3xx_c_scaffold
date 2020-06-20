@@ -76,15 +76,6 @@ AS = "#{PREFIX}gcc -x assembler-with-cpp"
 CP = "#{PREFIX}objcopy"
 SZ = "#{PREFIX}size"
 HEX = "#{CP} -O ihex"
- 
-# cpu
-CPU = "-mcpu=cortex-m4"
-# fpu
-FPU = "-mfpu=fpv4-sp-d16"
-# float-abi
-FLOAT_ABI = "-mfloat-abi=hard"
-# mcu
-MCU = "#{CPU} -mthumb #{FPU} #{FLOAT_ABI}"
 
 # macros for gcc
 # AS defines
@@ -118,9 +109,9 @@ C_INCLUDES = [
 ].join(" ")
 
 # compile gcc flags
-ASFLAGS = "#{MCU} #{AS_DEFS} #{AS_INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
+ASFLAGS = "#{AS_DEFS} #{AS_INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
 
-CFLAGS = "#{MCU} #{C_DEFS} #{C_INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
+CFLAGS = "#{C_DEFS} #{C_INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
 
 if DEBUG
   CFLAGS + ' -g -gdwarf-2'
@@ -135,8 +126,8 @@ LDSCRIPT = 'STM32F303RETx_FLASH.ld'
 # libraries
 LIBS = '-lc -lm -lnosys'
 LIBDIR = ''
-LDFLAGS = "#{MCU} -specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/#{DEBUG_DIR}/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
-LDFLAGS_rlse = "#{MCU} -specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/#{RELEASE_DIR}/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
+LDFLAGS = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/#{DEBUG_DIR}/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
+LDFLAGS_rlse = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/#{RELEASE_DIR}/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
 SOURCE_FILES = C_SOURCES + ASM_SOURCES
 
 # Create a mapping from all dependencies to their source files.
@@ -168,16 +159,18 @@ namespace :debug do
   desc "Link the object files"
   task :link => DEP_HASH[:debug][:obj_path].keys do |task|
     obj = DEP_HASH[:debug][:obj_path].keys.join(' ')
-    sh "#{CC} #{obj} #{LDFLAGS} -o build/#{DEBUG_DIR}/#{PROJECT[:name]}.elf"
+    mcu_args = TARGET[:mcu_args].join(' ')
+    sh "#{CC} #{obj} #{mcu_args} #{LDFLAGS} -o build/#{DEBUG_DIR}/#{PROJECT[:name]}.elf"
     sh "#{SZ} build/#{DEBUG_DIR}/#{PROJECT[:name]}.elf"
   end
 
   rule %r{/debug/obj/\w+\.o} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
+    mcu_args = TARGET[:mcu_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} -c #{CFLAGS} #{task.source} -o #{task.name}"
+      sh "#{CC} -c #{mcu_args} #{CFLAGS} #{task.source} -o #{task.name}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} -c #{ASFLAGS} #{task.source} -o #{task.name}"
+      sh "#{AS} -c #{mcu_args} #{ASFLAGS} #{task.source} -o #{task.name}"
     end
   end
 
@@ -186,10 +179,11 @@ namespace :debug do
   rule %r{/debug/dep/\w+\.mf} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     obj_path = task.name.pathmap("build/debug/obj/%n.o")
+    mcu_args = TARGET[:mcu_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} #{CFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{CC} #{mcu_args} #{CFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} #{ASFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{AS} #{mcu_args} #{ASFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     end
   end
 
@@ -205,26 +199,29 @@ namespace :release do
   desc "Link the object files"
   task :link => DEP_HASH[:release][:obj_path].keys do |task|
     obj = DEP_HASH[:release][:obj_path].keys.join(' ')
-    sh "#{CC} #{obj} #{LDFLAGS_rlse} -o build/#{RELEASE_DIR}/#{PROJECT[:name]}.elf"
+    mcu_args = TARGET[:mcu_args].join(' ')
+    sh "#{CC} #{obj} #{mcu_args} #{LDFLAGS_rlse} -o build/#{RELEASE_DIR}/#{PROJECT[:name]}.elf"
     sh "#{SZ} build/#{RELEASE_DIR}/#{PROJECT[:name]}.elf"
   end
 
   rule %r{/release/obj/\w+\.o} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
+    mcu_args = TARGET[:mcu_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} -c #{CFLAGS} #{task.source} -o #{task.name}"
+      sh "#{CC} -c #{mcu_args} #{CFLAGS} #{task.source} -o #{task.name}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} -c #{ASFLAGS} #{task.source} -o #{task.name}"
+      sh "#{AS} -c #{mcu_args} #{ASFLAGS} #{task.source} -o #{task.name}"
     end
   end
 
   rule %r{/release/dep/\w+\.mf} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     obj_path = task.name.pathmap("build/release/obj/%n.o")
+    mcu_args = TARGET[:mcu_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} #{CFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{CC} #{mcu_args} #{CFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} #{ASFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{AS} #{mcu_args} #{ASFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     end
   end
 
