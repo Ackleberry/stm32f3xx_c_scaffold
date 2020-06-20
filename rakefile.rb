@@ -58,10 +58,6 @@ CP = "#{PREFIX}objcopy"
 SZ = "#{PREFIX}size"
 HEX = "#{CP} -O ihex"
 
-# macros for gcc
-# AS defines
-AS_DEFS = ""
-
 # C defines
 DEFS =  [
   '-DUSE_FULL_LL_DRIVER',
@@ -86,7 +82,7 @@ INCLUDES = [
 ].join(" ")
 
 # compile gcc flags
-ASFLAGS = "#{AS_DEFS} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
+ASFLAGS = "#{DEFS} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
 
 CFLAGS = "#{DEFS} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
 
