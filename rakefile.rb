@@ -63,7 +63,7 @@ HEX = "#{CP} -O ihex"
 AS_DEFS = ""
 
 # C defines
-C_DEFS =  [
+DEFS =  [
   '-DUSE_FULL_LL_DRIVER',
   '-DHSE_VALUE=8000000',
   '-DHSE_STARTUP_TIMEOUT=100',
@@ -88,7 +88,7 @@ INCLUDES = [
 # compile gcc flags
 ASFLAGS = "#{AS_DEFS} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
 
-CFLAGS = "#{C_DEFS} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
+CFLAGS = "#{DEFS} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
 
 if DEBUG
   CFLAGS + ' -g -gdwarf-2'
