@@ -77,7 +77,7 @@ C_DEFS =  [
   '-DSTM32F303xE',
 ].join(" ")
 
-INCLUDE_FILES = [
+INCLUDES = [
   '-IInc',
   '-IDrivers/STM32F3xx_HAL_Driver/Inc',
   '-IDrivers/CMSIS/Device/ST/STM32F3xx/Include',
@@ -86,9 +86,9 @@ INCLUDE_FILES = [
 ].join(" ")
 
 # compile gcc flags
-ASFLAGS = "#{AS_DEFS} #{INCLUDE_FILES} #{OPT} -Wall -fdata-sections -ffunction-sections"
+ASFLAGS = "#{AS_DEFS} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
 
-CFLAGS = "#{C_DEFS} #{INCLUDE_FILES} #{OPT} -Wall -fdata-sections -ffunction-sections"
+CFLAGS = "#{C_DEFS} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
 
 if DEBUG
   CFLAGS + ' -g -gdwarf-2'
