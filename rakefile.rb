@@ -139,75 +139,21 @@ LDFLAGS = "#{MCU} -specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=bui
 LDFLAGS_rlse = "#{MCU} -specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/#{RELEASE_DIR}/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
 SOURCE_FILES = C_SOURCES + ASM_SOURCES
 
-# Create a mapping from objects to source files.
-OBJ_DEBUG_HASH = SOURCE_FILES.inject({}) do |cont, src_path|
-  obj_path = src_path.pathmap("build/debug/obj/%n.o")
-  cont[obj_path] = src_path
-  cont
-end
+# Create a mapping from all dependencies to their source files.
+DEP_HASH = {
+  :debug => {
+    :obj_path => SOURCE_FILES.pathmap("build/debug/obj/%n.o").zip(SOURCE_FILES).to_h,
+    :mf_path => SOURCE_FILES.pathmap("build/debug/dep/%n.mf").zip(SOURCE_FILES).to_h
+  },
+  :release => {
+    :obj_path => SOURCE_FILES.pathmap("build/release/obj/%n.o").zip(SOURCE_FILES).to_h,
+    :mf_path => SOURCE_FILES.pathmap("build/release/dep/%n.mf").zip(SOURCE_FILES).to_h
+  },
+}
 
-# DEP_HASH = {
-#   :debug => {
-#     [SOURCE_FILES.pathmap("build/debug/obj/%n.o").zip(SOURCE_FILES)]
-#   },
-#   :release => {
-#     [SOURCE_FILES.pathmap("build/release/obj/%n.o").zip(SOURCE_FILES)]
-#   },
-# }
-
-# DEP_HASH[:debug][SOURCE_FILES.pathmap("build/debug/obj/%n.o")] = SOURCE_FILES
-# DEP_HASH[:release][SOURCE_FILES.pathmap("build/release/obj/%n.o")] = SOURCE_FILES
-# DEP_HASH[:debug][SOURCE_FILES.pathmap("build/debug/dep/%n.mf")] = SOURCE_FILES
-# DEP_HASH[:release][SOURCE_FILES.pathmap("build/release/dep/%n.mf")] = SOURCE_FILES
-
-# DEP_HASH = SOURCE_FILES.inject() do |cont, src_path|
-#   debug_dep_path = src_path.pathmap("build/debug/dep/%n.mf")
-#   debug_obj_path = src_path.pathmap("build/debug/obj/%n.o")
-#   release_dep_path = src_path.pathmap("build/release/dep/%n.mf")
-#   release_obj_path = src_path.pathmap("build/release/obj/%n.o")
-
-#   cont[:debug][debug_obj_path] = src_path
-#   cont[:release][release_obj_path] = src_path
-#   cont[:debug][debug_dep_path] = src_path
-#   cont[:release][release_dep_path] = src_path
-# end
-
-# puts DEP_HASH
-
-OBJ_RELEASE_HASH = SOURCE_FILES.inject({}) do |cont, src_path|
-  obj_path = src_path.pathmap("build/release/obj/%n.o")
-  cont[obj_path] = src_path
-  cont
-end
-
-# Create a mapping from dependencies to source files.
-DEP_DEBUG_HASH = SOURCE_FILES.inject({}) do |cont, src_path|
-  dep_path = src_path.pathmap("build/debug/dep/%n.mf")
-  cont[dep_path] = src_path
-  cont
-end
-
-DEP_RELEASE_HASH = SOURCE_FILES.inject({}) do |cont, src_path|
-  dep_path = src_path.pathmap("build/release/dep/%n.mf")
-  cont[dep_path] = src_path
-  cont
-end
-
-get_src_path_dbg = lambda do |task_name|
-  puts task_name
-  if File.extname(task_name) == '.o'
-    OBJ_DEBUG_HASH[task_name]
-  elsif File.extname(task_name) == '.mf'
-    DEP_DEBUG_HASH[task_name]
-  end
-end
-
-get_src_path_rlse = lambda do |task_name| 
-  if File.extname(task_name) == '.o'
-    OBJ_RELEASE_HASH[task_name]
-  elsif File.extname(task_name) == '.mf'
-    DEP_RELEASE_HASH[task_name]
-  end
+get_src_path = lambda do |task_name|
+  obj = task_name.pathmap("build/debug/obj/%n.o")
+  DEP_HASH[:debug][:obj_path][obj]
 end
 
 task :default => ['debug:image']
@@ -220,13 +166,13 @@ namespace :debug do
   end
 
   desc "Link the object files"
-  task :link => OBJ_DEBUG_HASH.keys do |task|
-    obj = OBJ_DEBUG_HASH.keys.join(' ')
+  task :link => DEP_HASH[:debug][:obj_path].keys do |task|
+    obj = DEP_HASH[:debug][:obj_path].keys.join(' ')
     sh "#{CC} #{obj} #{LDFLAGS} -o build/#{DEBUG_DIR}/#{PROJECT[:name]}.elf"
     sh "#{SZ} build/#{DEBUG_DIR}/#{PROJECT[:name]}.elf"
   end
 
-  rule %r{/debug\/obj\/\w+\.o} => get_src_path_dbg do |task|
+  rule %r{/debug\/obj\/\w+\.o} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     if File.extname(task.source) == '.c'
       sh "#{CC} -c #{CFLAGS} #{task.source} -o #{task.name}"
@@ -237,7 +183,7 @@ namespace :debug do
 
   # Use GCC to output dependencies. Read and append .mf dependencies.
   # This ensures our dep files are regenerated when necessary.
-  rule %r{/debug/dep/\w+\.mf} => get_src_path_dbg do |task|
+  rule %r{/debug/dep/\w+\.mf} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     obj_path = task.name.pathmap("build/debug/obj/%n.o")
     if File.extname(task.source) == '.c'
@@ -257,13 +203,13 @@ namespace :release do
   end
 
   desc "Link the object files"
-  task :link => OBJ_RELEASE_HASH.keys do |task|
-    obj = OBJ_RELEASE_HASH.keys.join(' ')
+  task :link => DEP_HASH[:release][:obj_path].keys do |task|
+    obj = DEP_HASH[:release][:obj_path].keys.join(' ')
     sh "#{CC} #{obj} #{LDFLAGS_rlse} -o build/#{RELEASE_DIR}/#{PROJECT[:name]}.elf"
     sh "#{SZ} build/#{RELEASE_DIR}/#{PROJECT[:name]}.elf"
   end
 
-  rule %r{\/release\/obj\/\w+\.o} => get_src_path_rlse do |task|
+  rule %r{\/release\/obj\/\w+\.o} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     if File.extname(task.source) == '.c'
       sh "#{CC} -c #{CFLAGS} #{task.source} -o #{task.name}"
@@ -272,7 +218,7 @@ namespace :release do
     end
   end
 
-  rule %r{/release/dep/\w+\.mf} => get_src_path_rlse do |task|
+  rule %r{/release/dep/\w+\.mf} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     obj_path = task.name.pathmap("build/release/obj/%n.o")
     if File.extname(task.source) == '.c'
@@ -289,23 +235,18 @@ end
 # is necessary because it assures that the .mf file exists before
 # importing then import each dependency file. If the file doesn't
 # exist, then the file task to create it is invoked.
-DEP_DEBUG_HASH.each_key do |dep|
+all_mf_files = DEP_HASH[:debug][:mf_path].keys + DEP_HASH[:release][:mf_path].keys
+all_mf_files.each do |dep|
   file dep 
   puts "importing #{dep}"
   import dep #dependency file is imported after the Rakefile is loaded, but before and tasks are run
 end
 
-DEP_RELEASE_HASH.each_key do |dep|
-  file dep 
-  puts "importing #{dep}"
-  import dep
-end
-
 CLEAN.include(
-  DEP_DEBUG_HASH.keys, 
-  DEP_RELEASE_HASH.keys, 
-  OBJ_DEBUG_HASH.keys, 
-  OBJ_RELEASE_HASH.keys, 
+  DEP_HASH[:debug][:mf_path].keys, 
+  DEP_HASH[:release][:mf_path].keys, 
+  DEP_HASH[:debug][:obj_path].keys, 
+  DEP_HASH[:release][:obj_path].keys, 
   "build/#{DEBUG_DIR}/#{PROJECT[:name]}.*", 
   "build/#{RELEASE_DIR}/#{PROJECT[:name]}.*"
 )
