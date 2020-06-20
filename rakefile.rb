@@ -209,7 +209,7 @@ namespace :release do
     sh "#{SZ} build/#{RELEASE_DIR}/#{PROJECT[:name]}.elf"
   end
 
-  rule %r{/release/obj\/\w+\.o} => get_src_path do |task|
+  rule %r{/release/obj/\w+\.o} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     if File.extname(task.source) == '.c'
       sh "#{CC} -c #{CFLAGS} #{task.source} -o #{task.name}"
