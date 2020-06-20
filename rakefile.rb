@@ -1,15 +1,10 @@
 require 'rake/clean'
 require 'rake/loaders/makefile'
 
-######################################
-# Project settings
-######################################
 PROJECT = {
   :name => 'stm32f3xx_scaffold',
 }
-######################################
-# target settings
-######################################
+
 PREFIX = 'arm-none-eabi-'
 TARGET = {
   :mcu_args => [
