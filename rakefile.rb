@@ -41,7 +41,7 @@ DEBUG = true
 # optimization
 OPT = '-Og'
 
-C_SOURCES = Rake::FileList[
+SOURCE_FILES = Rake::FileList[
   'Src/**/*.c',
   'Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_ll_utils.c',
   'Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_ll_exti.c',
@@ -49,9 +49,6 @@ C_SOURCES = Rake::FileList[
   'Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_ll_usart.c',
   'Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_ll_rcc.c',
   'Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_ll_dma.c',
-]
-
-ASM_SOURCES =  Rake::FileList[
   'startup_stm32f303xe.s',
 ]
 
@@ -112,7 +109,6 @@ LIBS = '-lc -lm -lnosys'
 LIBDIR = ''
 LDFLAGS = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/debug/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
 LDFLAGS_rlse = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/release/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
-SOURCE_FILES = C_SOURCES + ASM_SOURCES
 
 # Create a mapping from all dependencies to their source files.
 DEP_HASH = {
