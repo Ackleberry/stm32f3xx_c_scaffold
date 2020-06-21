@@ -53,8 +53,6 @@ SOURCES = Rake::FileList[
   'startup_stm32f303xe.s',
 ]
 
-SZ = "#{PREFIX}size"
-
 # C defines
 DEFINES =  [
   '-DUSE_FULL_LL_DRIVER',
@@ -115,7 +113,7 @@ namespace :debug do
     obj = DEP_HASH[:debug][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     sh "#{TARGET[:compiler]} #{obj} #{mcu_args} #{LDFLAGS} -o build/debug/#{PROJECT[:name]}.elf"
-    sh "#{SZ} build/debug/#{PROJECT[:name]}.elf"
+    sh "#{TARGET[:size]} build/debug/#{PROJECT[:name]}.elf"
   end
 
   rule %r{/debug/obj/\w+\.o} => get_src_path do |task|
@@ -157,7 +155,7 @@ namespace :release do
     obj = DEP_HASH[:release][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     sh "#{TARGET[:compiler]} #{obj} #{mcu_args} #{LDFLAGS_rlse} -o build/release/#{PROJECT[:name]}.elf"
-    sh "#{SZ} build/release/#{PROJECT[:name]}.elf"
+    sh "#{TARGET[:size]} build/release/#{PROJECT[:name]}.elf"
   end
 
   rule %r{/release/obj/\w+\.o} => get_src_path do |task|
