@@ -100,10 +100,10 @@ namespace :debug do
 
   desc "Link the object files"
   task :link => DEP_HASH[:debug][:obj_path].keys do |task|
-    obj = DEP_HASH[:debug][:obj_path].keys.join(' ')
+    obj_files = DEP_HASH[:debug][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = "-Map=build/debug/#{PROJECT[:name]}.map"
-    sh "#{TARGET[:compiler]} #{obj} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/debug/#{PROJECT[:name]}.elf"
+    sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/debug/#{PROJECT[:name]}.elf"
     sh "#{TARGET[:size]} build/debug/#{PROJECT[:name]}.elf"
   end
 
@@ -143,10 +143,10 @@ namespace :release do
 
   desc "Link the object files"
   task :link => DEP_HASH[:release][:obj_path].keys do |task|
-    obj = DEP_HASH[:release][:obj_path].keys.join(' ')
+    obj_files = DEP_HASH[:release][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = "-Map=build/release/#{PROJECT[:name]}.map"
-    sh "#{TARGET[:compiler]} #{obj} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/release/#{PROJECT[:name]}.elf"
+    sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/release/#{PROJECT[:name]}.elf"
     sh "#{TARGET[:size]} build/release/#{PROJECT[:name]}.elf"
   end
 
