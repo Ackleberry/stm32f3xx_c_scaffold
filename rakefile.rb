@@ -53,8 +53,15 @@ SOURCES = Rake::FileList[
   'startup_stm32f303xe.s',
 ]
 
-# C defines
-DEFINES =  [
+INCLUDES = [
+  '-IInc',
+  '-IDrivers/STM32F3xx_HAL_Driver/Inc',
+  '-IDrivers/CMSIS/Device/ST/STM32F3xx/Include',
+  '-IDrivers/CMSIS/Include',
+  '-IDrivers/CMSIS/Include',
+].join(" ")
+
+DEFINES = [
   '-DUSE_FULL_LL_DRIVER',
   '-DHSE_VALUE=8000000',
   '-DHSE_STARTUP_TIMEOUT=100',
@@ -66,14 +73,6 @@ DEFINES =  [
   '-DVDD_VALUE=3300',
   '-DPREFETCH_ENABLE=1',
   '-DSTM32F303xE',
-].join(" ")
-
-INCLUDES = [
-  '-IInc',
-  '-IDrivers/STM32F3xx_HAL_Driver/Inc',
-  '-IDrivers/CMSIS/Device/ST/STM32F3xx/Include',
-  '-IDrivers/CMSIS/Include',
-  '-IDrivers/CMSIS/Include',
 ].join(" ")
 
 # libraries
