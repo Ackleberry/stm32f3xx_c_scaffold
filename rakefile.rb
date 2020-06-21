@@ -111,11 +111,8 @@ namespace :debug do
     mkdir_p File.dirname(task.name)
     mcu_args = TARGET[:mcu_args].join(' ')
     debug_args = TARGET[:debug_args].join(' ')
-    if File.extname(task.source) == '.c'
-      sh "#{TARGET[:compiler]} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
-    elsif File.extname(task.source) == '.s'
-      sh "#{TARGET[:assembler]} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
-    end
+    compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
+    sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
   end
 
   # Use GCC to output dependencies. Read and append .mf dependencies.
@@ -125,11 +122,8 @@ namespace :debug do
     obj_path = task.name.pathmap("build/debug/obj/%n.o")
     mcu_args = TARGET[:mcu_args].join(' ')
     debug_args = TARGET[:debug_args].join(' ')
-    if File.extname(task.source) == '.c'
-      sh "#{TARGET[:compiler]} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
-    elsif File.extname(task.source) == '.s'
-      sh "#{TARGET[:assembler]} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
-    end
+    compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
+    sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
   end
 
 end
@@ -154,11 +148,8 @@ namespace :release do
     mkdir_p File.dirname(task.name)
     mcu_args = TARGET[:mcu_args].join(' ')
     release_args = TARGET[:release_args].join(' ')
-    if File.extname(task.source) == '.c'
-      sh "#{TARGET[:compiler]} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
-    elsif File.extname(task.source) == '.s'
-      sh "#{TARGET[:assembler]} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
-    end
+    compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
+    sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
   end
 
   rule %r{/release/dep/\w+\.mf} => get_src_path do |task|
@@ -166,11 +157,8 @@ namespace :release do
     obj_path = task.name.pathmap("build/release/obj/%n.o")
     mcu_args = TARGET[:mcu_args].join(' ')
     release_args = TARGET[:release_args].join(' ')
-    if File.extname(task.source) == '.c'
-      sh "#{TARGET[:compiler]} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
-    elsif File.extname(task.source) == '.s'
-      sh "#{TARGET[:assembler]} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
-    end
+    compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
+    sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
   end
 
 end
