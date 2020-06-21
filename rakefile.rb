@@ -29,11 +29,8 @@ TARGET = {
     '-ffunction-sections',
   ],
   :assembler => "#{PREFIX}gcc -x assembler-with-cpp",
-  :linker => '',
   :ld_script => 'STM32F303RETx_FLASH.ld',
-  :linker_args => [
-
-  ],
+  :linker_args => "-specs=nano.specs -lc -lm -lnosys -Wl,--cref -Wl,--gc-sections,",
   :hex_file_args => [],
   :size => "#{PREFIX}size",
   :objcopy => "#{PREFIX}objcopy",
@@ -75,12 +72,6 @@ DEFINES = [
   '-DSTM32F303xE',
 ].join(" ")
 
-# libraries
-LIBS = '-lc -lm -lnosys'
-LIBDIR = ''
-LDFLAGS = "-specs=nano.specs -T#{TARGET[:ld_script]} #{LIBDIR} #{LIBS} -Wl,-Map=build/debug/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
-LDFLAGS_rlse = "-specs=nano.specs -T#{TARGET[:ld_script]} #{LIBDIR} #{LIBS} -Wl,-Map=build/release/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
-
 # Create a mapping from all dependencies to their source files.
 DEP_HASH = {
   :debug => {
@@ -111,7 +102,8 @@ namespace :debug do
   task :link => DEP_HASH[:debug][:obj_path].keys do |task|
     obj = DEP_HASH[:debug][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    sh "#{TARGET[:compiler]} #{obj} #{mcu_args} #{LDFLAGS} -o build/debug/#{PROJECT[:name]}.elf"
+    map_file_path = "-Map=build/debug/#{PROJECT[:name]}.map"
+    sh "#{TARGET[:compiler]} #{obj} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/debug/#{PROJECT[:name]}.elf"
     sh "#{TARGET[:size]} build/debug/#{PROJECT[:name]}.elf"
   end
 
@@ -153,7 +145,8 @@ namespace :release do
   task :link => DEP_HASH[:release][:obj_path].keys do |task|
     obj = DEP_HASH[:release][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    sh "#{TARGET[:compiler]} #{obj} #{mcu_args} #{LDFLAGS_rlse} -o build/release/#{PROJECT[:name]}.elf"
+    map_file_path = "-Map=build/release/#{PROJECT[:name]}.map"
+    sh "#{TARGET[:compiler]} #{obj} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/release/#{PROJECT[:name]}.elf"
     sh "#{TARGET[:size]} build/release/#{PROJECT[:name]}.elf"
   end
 
