@@ -23,7 +23,7 @@ TARGET = {
     '-gdwarf-2',
   ],
   :release_args => [
-    '-Og',
+    '-O3',
     '-Wall',
     '-fdata-sections',
     '-ffunction-sections',
