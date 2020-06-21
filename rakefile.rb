@@ -192,6 +192,9 @@ CLEAN.include(
   DEP_HASH[:release][:mf_path].keys, 
   DEP_HASH[:debug][:obj_path].keys, 
   DEP_HASH[:release][:obj_path].keys, 
+)
+
+CLOBBER.include(
   "build/debug/#{PROJECT[:name]}.*", 
   "build/release/#{PROJECT[:name]}.*"
 )
