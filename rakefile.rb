@@ -33,12 +33,7 @@ TARGET = {
   ],
 }
 
-######################################
-# building variables
-######################################
-# debug build?
 DEBUG = true
-# optimization
 OPT = '-Og'
 
 SOURCES = Rake::FileList[
@@ -90,10 +85,6 @@ if DEBUG
   CFLAGS + ' -g -gdwarf-2'
 end
 
-#######################################
-# LDFLAGS
-#######################################
-# link script
 LDSCRIPT = 'STM32F303RETx_FLASH.ld'
 
 # libraries
