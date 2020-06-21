@@ -30,6 +30,7 @@ TARGET = {
   ],
   :assembler => "#{PREFIX}gcc -x assembler-with-cpp",
   :linker => '',
+  :ld_script => 'STM32F303RETx_FLASH.ld',
   :linker_args => [
 
   ],
@@ -79,13 +80,11 @@ INCLUDES = [
   '-IDrivers/CMSIS/Include',
 ].join(" ")
 
-LDSCRIPT = 'STM32F303RETx_FLASH.ld'
-
 # libraries
 LIBS = '-lc -lm -lnosys'
 LIBDIR = ''
-LDFLAGS = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/debug/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
-LDFLAGS_rlse = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build/release/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
+LDFLAGS = "-specs=nano.specs -T#{TARGET[:ld_script]} #{LIBDIR} #{LIBS} -Wl,-Map=build/debug/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
+LDFLAGS_rlse = "-specs=nano.specs -T#{TARGET[:ld_script]} #{LIBDIR} #{LIBS} -Wl,-Map=build/release/#{PROJECT[:name]}.map,--cref -Wl,--gc-sections"
 
 # Create a mapping from all dependencies to their source files.
 DEP_HASH = {
