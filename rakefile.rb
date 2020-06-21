@@ -41,7 +41,7 @@ DEBUG = true
 # optimization
 OPT = '-Og'
 
-SOURCE_FILES = Rake::FileList[
+SOURCES = Rake::FileList[
   'Src/**/*.c',
   'Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_ll_utils.c',
   'Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_ll_exti.c',
@@ -105,12 +105,12 @@ LDFLAGS_rlse = "-specs=nano.specs -T#{LDSCRIPT} #{LIBDIR} #{LIBS} -Wl,-Map=build
 # Create a mapping from all dependencies to their source files.
 DEP_HASH = {
   :debug => {
-    :obj_path => SOURCE_FILES.pathmap("build/debug/obj/%n.o").zip(SOURCE_FILES).to_h,
-    :mf_path => SOURCE_FILES.pathmap("build/debug/dep/%n.mf").zip(SOURCE_FILES).to_h
+    :obj_path => SOURCES.pathmap("build/debug/obj/%n.o").zip(SOURCES).to_h,
+    :mf_path => SOURCES.pathmap("build/debug/dep/%n.mf").zip(SOURCES).to_h
   },
   :release => {
-    :obj_path => SOURCE_FILES.pathmap("build/release/obj/%n.o").zip(SOURCE_FILES).to_h,
-    :mf_path => SOURCE_FILES.pathmap("build/release/dep/%n.mf").zip(SOURCE_FILES).to_h
+    :obj_path => SOURCES.pathmap("build/release/obj/%n.o").zip(SOURCES).to_h,
+    :mf_path => SOURCES.pathmap("build/release/dep/%n.mf").zip(SOURCES).to_h
   },
 }
 
