@@ -52,8 +52,6 @@ SOURCES = Rake::FileList[
   'startup_stm32f303xe.s',
 ]
 
-CC = "#{PREFIX}gcc"
-AS = "#{PREFIX}gcc -x assembler-with-cpp"
 CP = "#{PREFIX}objcopy"
 SZ = "#{PREFIX}size"
 HEX = "#{CP} -O ihex"
@@ -119,7 +117,7 @@ namespace :debug do
   task :link => DEP_HASH[:debug][:obj_path].keys do |task|
     obj = DEP_HASH[:debug][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    sh "#{CC} #{obj} #{mcu_args} #{LDFLAGS} -o build/debug/#{PROJECT[:name]}.elf"
+    sh "#{TARGET[:compiler]} #{obj} #{mcu_args} #{LDFLAGS} -o build/debug/#{PROJECT[:name]}.elf"
     sh "#{SZ} build/debug/#{PROJECT[:name]}.elf"
   end
 
@@ -128,9 +126,9 @@ namespace :debug do
     mcu_args = TARGET[:mcu_args].join(' ')
     debug_args = TARGET[:debug_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
+      sh "#{TARGET[:compiler]} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
+      sh "#{TARGET[:assembler]} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
     end
   end
 
@@ -142,9 +140,9 @@ namespace :debug do
     mcu_args = TARGET[:mcu_args].join(' ')
     debug_args = TARGET[:debug_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{TARGET[:compiler]} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{TARGET[:assembler]} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     end
   end
 
@@ -161,7 +159,7 @@ namespace :release do
   task :link => DEP_HASH[:release][:obj_path].keys do |task|
     obj = DEP_HASH[:release][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    sh "#{CC} #{obj} #{mcu_args} #{LDFLAGS_rlse} -o build/release/#{PROJECT[:name]}.elf"
+    sh "#{TARGET[:compiler]} #{obj} #{mcu_args} #{LDFLAGS_rlse} -o build/release/#{PROJECT[:name]}.elf"
     sh "#{SZ} build/release/#{PROJECT[:name]}.elf"
   end
 
@@ -170,9 +168,9 @@ namespace :release do
     mcu_args = TARGET[:mcu_args].join(' ')
     release_args = TARGET[:release_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
+      sh "#{TARGET[:compiler]} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
+      sh "#{TARGET[:assembler]} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
     end
   end
 
@@ -182,9 +180,9 @@ namespace :release do
     mcu_args = TARGET[:mcu_args].join(' ')
     release_args = TARGET[:release_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{TARGET[:compiler]} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{TARGET[:assembler]} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     end
   end
 
