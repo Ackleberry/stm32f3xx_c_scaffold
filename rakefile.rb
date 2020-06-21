@@ -53,9 +53,7 @@ SOURCES = Rake::FileList[
   'startup_stm32f303xe.s',
 ]
 
-CP = "#{PREFIX}objcopy"
 SZ = "#{PREFIX}size"
-HEX = "#{CP} -O ihex"
 
 # C defines
 DEFINES =  [
@@ -109,7 +107,7 @@ namespace :debug do
 
   desc "Generates the flash image from ELF format"
   task :image => :link do |task|
-    sh "#{HEX} build/debug/#{PROJECT[:name]}.elf build/debug/#{PROJECT[:name]}.hex"
+    sh "#{TARGET[:objcopy]} -O ihex build/debug/#{PROJECT[:name]}.elf build/debug/#{PROJECT[:name]}.hex"
   end
 
   desc "Link the object files"
@@ -151,7 +149,7 @@ namespace :release do
 
   desc "Generates the flash image from ELF format"
   task :image => :link do |task|
-    sh "#{HEX} build/release/#{PROJECT[:name]}.elf build/release/#{PROJECT[:name]}.hex"
+    sh "#{TARGET[:objcopy]} -O ihex build/release/#{PROJECT[:name]}.elf build/release/#{PROJECT[:name]}.hex"
   end
 
   desc "Link the object files"
