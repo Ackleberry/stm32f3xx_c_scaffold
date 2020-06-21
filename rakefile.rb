@@ -15,10 +15,18 @@ TARGET = {
   ],
   :compiler => "#{PREFIX}gcc",
   :debug_args => [
-    
+    '-Og',
+    '-Wall',
+    '-fdata-sections',
+    '-ffunction-sections',
+    '-g',
+    '-gdwarf-2',
   ],
   :release_args => [
-    
+    '-Og',
+    '-Wall',
+    '-fdata-sections',
+    '-ffunction-sections',
   ],
   :assembler => "#{PREFIX}gcc -x assembler-with-cpp",
   :linker => '',
@@ -32,9 +40,6 @@ TARGET = {
     
   ],
 }
-
-DEBUG = true
-OPT = '-Og'
 
 SOURCES = Rake::FileList[
   'Src/**/*.c',
@@ -75,15 +80,6 @@ INCLUDES = [
   '-IDrivers/CMSIS/Include',
   '-IDrivers/CMSIS/Include',
 ].join(" ")
-
-# compile gcc flags
-ASFLAGS = "#{DEFINES} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
-
-CFLAGS = "#{DEFINES} #{INCLUDES} #{OPT} -Wall -fdata-sections -ffunction-sections"
-
-if DEBUG
-  CFLAGS + ' -g -gdwarf-2'
-end
 
 LDSCRIPT = 'STM32F303RETx_FLASH.ld'
 
@@ -130,10 +126,11 @@ namespace :debug do
   rule %r{/debug/obj/\w+\.o} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     mcu_args = TARGET[:mcu_args].join(' ')
+    debug_args = TARGET[:debug_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} -c #{mcu_args} #{CFLAGS} #{task.source} -o #{task.name}"
+      sh "#{CC} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} -c #{mcu_args} #{ASFLAGS} #{task.source} -o #{task.name}"
+      sh "#{AS} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
     end
   end
 
@@ -143,10 +140,11 @@ namespace :debug do
     mkdir_p File.dirname(task.name)
     obj_path = task.name.pathmap("build/debug/obj/%n.o")
     mcu_args = TARGET[:mcu_args].join(' ')
+    debug_args = TARGET[:debug_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} #{mcu_args} #{CFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{CC} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} #{mcu_args} #{ASFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{AS} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     end
   end
 
@@ -170,10 +168,11 @@ namespace :release do
   rule %r{/release/obj/\w+\.o} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     mcu_args = TARGET[:mcu_args].join(' ')
+    release_args = TARGET[:release_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} -c #{mcu_args} #{CFLAGS} #{task.source} -o #{task.name}"
+      sh "#{CC} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} -c #{mcu_args} #{ASFLAGS} #{task.source} -o #{task.name}"
+      sh "#{AS} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
     end
   end
 
@@ -181,10 +180,11 @@ namespace :release do
     mkdir_p File.dirname(task.name)
     obj_path = task.name.pathmap("build/release/obj/%n.o")
     mcu_args = TARGET[:mcu_args].join(' ')
+    release_args = TARGET[:release_args].join(' ')
     if File.extname(task.source) == '.c'
-      sh "#{CC} #{mcu_args} #{CFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{CC} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     elsif File.extname(task.source) == '.s'
-      sh "#{AS} #{mcu_args} #{ASFLAGS} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+      sh "#{AS} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
     end
   end
 
