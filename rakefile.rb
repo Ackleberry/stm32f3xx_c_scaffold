@@ -2,41 +2,39 @@ require 'rake/clean'
 require 'rake/loaders/makefile'
 
 PROJECT = {
-  :name => 'stm32f3xx_scaffold',
+  name: 'stm32f3xx_scaffold'
 }
 
 PREFIX = 'arm-none-eabi-'
 TARGET = {
-  :mcu_args => [
+  mcu_args: [
     '-mcpu=cortex-m4',
     '-mthumb',
     '-mfpu=fpv4-sp-d16',
-    '-mfloat-abi=hard',
+    '-mfloat-abi=hard'
   ],
-  :compiler => "#{PREFIX}gcc",
-  :debug_args => [
+  compiler: "#{PREFIX}gcc",
+  debug_args: [
     '-Og',
     '-Wall',
     '-fdata-sections',
     '-ffunction-sections',
     '-g',
-    '-gdwarf-2',
+    '-gdwarf-2'
   ],
-  :release_args => [
+  release_args: [
     '-O3',
     '-Wall',
     '-fdata-sections',
-    '-ffunction-sections',
+    '-ffunction-sections'
   ],
-  :assembler => "#{PREFIX}gcc -x assembler-with-cpp",
-  :ld_script => 'STM32F303RETx_FLASH.ld',
-  :linker_args => "-specs=nano.specs -lc -lm -lnosys -Wl,--cref -Wl,--gc-sections,",
-  :hex_file_args => [],
-  :size => "#{PREFIX}size",
-  :objcopy => "#{PREFIX}objcopy",
-  :objcopy_args => [
-    
-  ],
+  assembler: "#{PREFIX}gcc -x assembler-with-cpp",
+  ld_script: 'STM32F303RETx_FLASH.ld',
+  linker_args: '-specs=nano.specs -lc -lm -lnosys -Wl,--cref -Wl,--gc-sections,',
+  hex_file_args: [],
+  size: "#{PREFIX}size",
+  objcopy: "#{PREFIX}objcopy",
+  objcopy_args: []
 }
 
 SOURCES = Rake::FileList[
@@ -55,8 +53,8 @@ INCLUDES = [
   '-IDrivers/STM32F3xx_HAL_Driver/Inc',
   '-IDrivers/CMSIS/Device/ST/STM32F3xx/Include',
   '-IDrivers/CMSIS/Include',
-  '-IDrivers/CMSIS/Include',
-].join(" ")
+  '-IDrivers/CMSIS/Include'
+].join(' ')
 
 DEFINES = [
   '-DUSE_FULL_LL_DRIVER',
@@ -69,37 +67,36 @@ DEFINES = [
   '-DLSI_VALUE=40000',
   '-DVDD_VALUE=3300',
   '-DPREFETCH_ENABLE=1',
-  '-DSTM32F303xE',
-].join(" ")
+  '-DSTM32F303xE'
+].join(' ')
 
 # Create a mapping from all dependencies to their source files.
 DEP_HASH = {
-  :debug => {
-    :obj_path => SOURCES.pathmap("build/debug/obj/%n.o").zip(SOURCES).to_h,
-    :mf_path => SOURCES.pathmap("build/debug/dep/%n.mf").zip(SOURCES).to_h
+  debug: {
+    obj_path: SOURCES.pathmap('build/debug/obj/%n.o').zip(SOURCES).to_h,
+    mf_path: SOURCES.pathmap('build/debug/dep/%n.mf').zip(SOURCES).to_h
   },
-  :release => {
-    :obj_path => SOURCES.pathmap("build/release/obj/%n.o").zip(SOURCES).to_h,
-    :mf_path => SOURCES.pathmap("build/release/dep/%n.mf").zip(SOURCES).to_h
-  },
+  release: {
+    obj_path: SOURCES.pathmap('build/release/obj/%n.o').zip(SOURCES).to_h,
+    mf_path: SOURCES.pathmap('build/release/dep/%n.mf').zip(SOURCES).to_h
+  }
 }
 
 get_src_path = lambda do |task_name|
-  obj = task_name.pathmap("build/debug/obj/%n.o")
+  obj = task_name.pathmap('build/debug/obj/%n.o')
   DEP_HASH[:debug][:obj_path][obj]
 end
 
-task :default => ['debug:image']
+task default: 'debug:image'
 
 namespace :debug do
-
-  desc "Generates the flash image from ELF format"
-  task :image => :link do |task|
+  desc 'Generates the flash image from ELF format'
+  task image: :link do |task|
     sh "#{TARGET[:objcopy]} -O ihex build/debug/#{PROJECT[:name]}.elf build/debug/#{PROJECT[:name]}.hex"
   end
 
-  desc "Link the object files"
-  task :link => DEP_HASH[:debug][:obj_path].keys do |task|
+  desc 'Link the object files'
+  task link: DEP_HASH[:debug][:obj_path].keys do |task|
     obj_files = DEP_HASH[:debug][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = "-Map=build/debug/#{PROJECT[:name]}.map"
@@ -119,24 +116,22 @@ namespace :debug do
   # This ensures our dep files are regenerated when necessary.
   rule %r{/debug/dep/\w+\.mf} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
-    obj_path = task.name.pathmap("build/debug/obj/%n.o")
+    obj_path = task.name.pathmap('build/debug/obj/%n.o')
     mcu_args = TARGET[:mcu_args].join(' ')
     debug_args = TARGET[:debug_args].join(' ')
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
     sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
   end
-
 end
 
 namespace :release do
-
-  desc "Generates the flash image from ELF format"
-  task :image => :link do |task|
+  desc 'Generates the flash image from ELF format'
+  task image: :link do |task|
     sh "#{TARGET[:objcopy]} -O ihex build/release/#{PROJECT[:name]}.elf build/release/#{PROJECT[:name]}.hex"
   end
 
-  desc "Link the object files"
-  task :link => DEP_HASH[:release][:obj_path].keys do |task|
+  desc 'Link the object files'
+  task link: DEP_HASH[:release][:obj_path].keys do |task|
     obj_files = DEP_HASH[:release][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = "-Map=build/release/#{PROJECT[:name]}.map"
@@ -154,13 +149,12 @@ namespace :release do
 
   rule %r{/release/dep/\w+\.mf} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
-    obj_path = task.name.pathmap("build/release/obj/%n.o")
+    obj_path = task.name.pathmap('build/release/obj/%n.o')
     mcu_args = TARGET[:mcu_args].join(' ')
     release_args = TARGET[:release_args].join(' ')
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
     sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
   end
-
 end
 
 # Declare an explict file task for each dependency file. This will
@@ -170,19 +164,19 @@ end
 # exist, then the file task to create it is invoked.
 all_mf_files = DEP_HASH[:debug][:mf_path].keys + DEP_HASH[:release][:mf_path].keys
 all_mf_files.each do |dep|
-  file dep 
+  file dep
   puts "importing #{dep}"
-  import dep #dependency file is imported after the Rakefile is loaded, but before and tasks are run
+  import dep # dependency file is imported after the Rakefile is loaded, but before and tasks are run
 end
 
 CLEAN.include(
-  DEP_HASH[:debug][:mf_path].keys, 
-  DEP_HASH[:release][:mf_path].keys, 
-  DEP_HASH[:debug][:obj_path].keys, 
-  DEP_HASH[:release][:obj_path].keys, 
+  DEP_HASH[:debug][:mf_path].keys,
+  DEP_HASH[:release][:mf_path].keys,
+  DEP_HASH[:debug][:obj_path].keys,
+  DEP_HASH[:release][:obj_path].keys
 )
 
 CLOBBER.include(
-  "build/debug/#{PROJECT[:name]}.*", 
+  "build/debug/#{PROJECT[:name]}.*",
   "build/release/#{PROJECT[:name]}.*"
 )
