@@ -87,16 +87,20 @@ get_src_path = lambda do |task_name|
   DEP_HASH[:debug][:obj_path][obj]
 end
 
-task default: 'debug:image'
+task default: 'debug:hex'
 
 namespace :debug do
-  desc 'Generates the flash image from ELF format'
-  task image: :link do |task|
+  desc 'Generate the HEX image from ELF file'
+  task hex: "build/debug/#{PROJECT[:name]}.hex"
+
+  desc 'Link the object files and generate an ELF file'
+  task elf: "build/debug/#{PROJECT[:name]}.elf"
+
+  file "build/debug/#{PROJECT[:name]}.hex": "build/debug/#{PROJECT[:name]}.elf" do |task|
     sh "#{TARGET[:objcopy]} -O ihex build/debug/#{PROJECT[:name]}.elf build/debug/#{PROJECT[:name]}.hex"
   end
 
-  desc 'Link the object files'
-  task link: DEP_HASH[:debug][:obj_path].keys do |task|
+  file "build/debug/#{PROJECT[:name]}.elf": DEP_HASH[:debug][:obj_path].keys do |task|
     obj_files = DEP_HASH[:debug][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = "-Map=build/debug/#{PROJECT[:name]}.map"
@@ -125,13 +129,17 @@ namespace :debug do
 end
 
 namespace :release do
-  desc 'Generates the flash image from ELF format'
-  task image: :link do |task|
+  desc 'Generate the HEX image from ELF file'
+  task hex: "build/release/#{PROJECT[:name]}.hex"
+
+  desc 'Link the object files and generate an ELF file'
+  task elf: "build/release/#{PROJECT[:name]}.elf"
+
+  file "build/release/#{PROJECT[:name]}.hex": "build/release/#{PROJECT[:name]}.elf" do |task|
     sh "#{TARGET[:objcopy]} -O ihex build/release/#{PROJECT[:name]}.elf build/release/#{PROJECT[:name]}.hex"
   end
 
-  desc 'Link the object files'
-  task link: DEP_HASH[:release][:obj_path].keys do |task|
+  file "build/release/#{PROJECT[:name]}.elf": DEP_HASH[:release][:obj_path].keys do |task|
     obj_files = DEP_HASH[:release][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = "-Map=build/release/#{PROJECT[:name]}.map"
