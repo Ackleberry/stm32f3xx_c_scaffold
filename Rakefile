@@ -137,8 +137,7 @@ rule %r{/obj/\w+\.o} => get_src_path do |task|
   sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} #{task.source} -o #{task.name}"
 end
 
-# Use GCC to output dependencies. Read and append .mf dependencies.
-# This ensures our dep files are regenerated when necessary.
+# Use GCC to output dependencies. This ensures our obj/mf files are regenerated when necessary.
 rule %r{/dep/\w+\.mf} => get_src_path do |task|
   mkdir_p File.dirname(task.name)
   obj_path = task.name.pathmap("%{/dep/,/obj/}X.o")
