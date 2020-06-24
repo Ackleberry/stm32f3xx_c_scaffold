@@ -103,7 +103,7 @@ namespace :debug do
   file "build/debug/#{PROJECT[:name]}.elf": DEP_HASH[:debug][:obj_path].keys do |task|
     obj_files = task.prerequisites.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    map_file_path = "-Map=" + task.name.pathmap("%X.map")
+    map_file_path = '-Map=' + task.name.pathmap('%X.map')
     sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o #{task.name}"
     sh "#{TARGET[:size]} #{task.name}"
   end
@@ -123,7 +123,7 @@ namespace :release do
   file "build/release/#{PROJECT[:name]}.elf": DEP_HASH[:release][:obj_path].keys do |task|
     obj_files = task.prerequisites.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    map_file_path = "-Map=" + task.name.pathmap("%X.map")
+    map_file_path = '-Map=' + task.name.pathmap('%X.map')
     sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o #{task.name}"
     sh "#{TARGET[:size]} #{task.name}"
   end
@@ -140,7 +140,7 @@ end
 # Use GCC to output dependencies. This ensures our obj/mf files are regenerated when necessary.
 rule %r{/dep/\w+\.mf} => get_src_path do |task|
   mkdir_p File.dirname(task.name)
-  obj_path = task.name.pathmap("%{/dep/,/obj/}X.o")
+  obj_path = task.name.pathmap('%{/dep/,/obj/}X.o')
   mcu_args = TARGET[:mcu_args].join(' ')
   compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
   compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
