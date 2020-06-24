@@ -1,12 +1,9 @@
 require 'rake/clean'
 require 'rake/loaders/makefile'
 
-PROJECT = {
-  name: 'stm32f3xx_scaffold'
-}
-
 PREFIX = 'arm-none-eabi-'
 TARGET = {
+  name: 'stm32f3xx_scaffold',
   mcu_args: [
     '-mcpu=cortex-m4',
     '-mthumb',
@@ -86,16 +83,16 @@ task default: 'debug:hex'
 
 namespace :debug do
   desc 'Generate the HEX image from ELF file'
-  task hex: "build/debug/#{PROJECT[:name]}.hex"
+  task hex: "build/debug/#{TARGET[:name]}.hex"
 
   desc 'Link the object files and generate an ELF file'
-  task elf: "build/debug/#{PROJECT[:name]}.elf"
+  task elf: "build/debug/#{TARGET[:name]}.elf"
 
-  file "build/debug/#{PROJECT[:name]}.hex": "build/debug/#{PROJECT[:name]}.elf" do |task|
+  file "build/debug/#{TARGET[:name]}.hex": "build/debug/#{TARGET[:name]}.elf" do |task|
     sh "#{TARGET[:objcopy]} -O ihex #{task.source} #{task.name}"
   end
 
-  file "build/debug/#{PROJECT[:name]}.elf": DEP_HASH[:debug][:obj_path].keys do |task|
+  file "build/debug/#{TARGET[:name]}.elf": DEP_HASH[:debug][:obj_path].keys do |task|
     obj_files = task.prerequisites.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = '-Map=' + task.name.pathmap('%X.map')
@@ -106,16 +103,16 @@ end
 
 namespace :release do
   desc 'Generate the HEX image from ELF file'
-  task hex: "build/release/#{PROJECT[:name]}.hex"
+  task hex: "build/release/#{TARGET[:name]}.hex"
 
   desc 'Link the object files and generate an ELF file'
-  task elf: "build/release/#{PROJECT[:name]}.elf"
+  task elf: "build/release/#{TARGET[:name]}.elf"
 
-  file "build/release/#{PROJECT[:name]}.hex": "build/release/#{PROJECT[:name]}.elf" do |task|
+  file "build/release/#{TARGET[:name]}.hex": "build/release/#{TARGET[:name]}.elf" do |task|
     sh "#{TARGET[:objcopy]} -O ihex #{task.source} #{task.name}"
   end
 
-  file "build/release/#{PROJECT[:name]}.elf": DEP_HASH[:release][:obj_path].keys do |task|
+  file "build/release/#{TARGET[:name]}.elf": DEP_HASH[:release][:obj_path].keys do |task|
     obj_files = task.prerequisites.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = '-Map=' + task.name.pathmap('%X.map')
@@ -165,6 +162,6 @@ CLEAN.include(
 )
 
 CLOBBER.include(
-  "build/debug/#{PROJECT[:name]}.*",
-  "build/release/#{PROJECT[:name]}.*"
+  "build/debug/#{TARGET[:name]}.*",
+  "build/release/#{TARGET[:name]}.*"
 )
