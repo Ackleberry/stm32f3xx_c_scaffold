@@ -28,10 +28,8 @@ TARGET = {
   assembler: "#{PREFIX}gcc -x assembler-with-cpp",
   ld_script: 'STM32F303RETx_FLASH.ld',
   linker_args: '-specs=nano.specs -lc -lm -lnosys -Wl,--cref -Wl,--gc-sections,',
-  hex_file_args: [],
   size: "#{PREFIX}size",
-  objcopy: "#{PREFIX}objcopy",
-  objcopy_args: []
+  objcopy: "#{PREFIX}objcopy"
 }
 
 SOURCES = Rake::FileList[
