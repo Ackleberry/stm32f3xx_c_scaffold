@@ -144,7 +144,8 @@ rule %r{/dep/\w+\.mf} => get_src_path do |task|
   mcu_args = TARGET[:mcu_args].join(' ')
   compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
   compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
-  sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+  mf_args = "-MM -MP -MG -MT #{task.name} -MT #{obj_path}"
+  sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} #{mf_args} #{task.source} > #{task.name}"
 end
 
 # Declare an file task for each dep file. This will invoke the .mf rule above and is needed to create the file, if it
