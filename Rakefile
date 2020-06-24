@@ -137,7 +137,7 @@ rule %r{/obj/\w+\.o} => get_src_path do |task|
   sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} #{task.source} -o #{task.name}"
 end
 
-# Use GCC to output dependencies. This ensures our obj/mf files are regenerated when necessary.
+# Gets GCC to output each obj files dependencies. This allows incremental builds.
 rule %r{/dep/\w+\.mf} => get_src_path do |task|
   mkdir_p File.dirname(task.name) unless File.exist?(File.dirname(task.name))
   obj_path = task.name.pathmap('%{/dep/,/obj/}X.o')
@@ -147,16 +147,13 @@ rule %r{/dep/\w+\.mf} => get_src_path do |task|
   sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
 end
 
-# Declare an explict file task for each dependency file. This will
-# use the rule defined to create .mf files defined earlier. This
-# is necessary because it assures that the .mf file exists before
-# importing then import each dependency file. If the file doesn't
-# exist, then the file task to create it is invoked.
+# Declare an file task for each dep file. This will invoke the .mf rule above and is needed to create the file, if it
+# does not exist, before importing. Recall importing occurrs after the rakefile is loaded, but before tasks are run.
 all_mf_files = DEP_HASH[:debug][:mf_path].keys + DEP_HASH[:release][:mf_path].keys
 all_mf_files.each do |dep|
   file dep
   puts "importing #{dep}"
-  import dep # dep file is imported after the Rakefile is loaded, but before and tasks are run
+  import dep
 end
 
 CLEAN.include(
