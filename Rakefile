@@ -130,7 +130,7 @@ namespace :release do
 end
 
 rule %r{/obj/\w+\.o} => get_src_path do |task|
-  mkdir_p File.dirname(task.name)
+  mkdir_p File.dirname(task.name) unless File.exist?(File.dirname(task.name))
   mcu_args = TARGET[:mcu_args].join(' ')
   compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
   compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
@@ -139,7 +139,7 @@ end
 
 # Use GCC to output dependencies. This ensures our obj/mf files are regenerated when necessary.
 rule %r{/dep/\w+\.mf} => get_src_path do |task|
-  mkdir_p File.dirname(task.name)
+  mkdir_p File.dirname(task.name) unless File.exist?(File.dirname(task.name))
   obj_path = task.name.pathmap('%{/dep/,/obj/}X.o')
   mcu_args = TARGET[:mcu_args].join(' ')
   compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
