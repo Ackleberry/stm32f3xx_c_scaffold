@@ -101,7 +101,7 @@ namespace :debug do
   end
 
   file "build/debug/#{PROJECT[:name]}.elf": DEP_HASH[:debug][:obj_path].keys do |task|
-    obj_files = DEP_HASH[:debug][:obj_path].keys.join(' ')
+    obj_files = task.prerequisites.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = "-Map=" + task.name.pathmap("%X.map")
     sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o #{task.name}"
@@ -121,7 +121,7 @@ namespace :release do
   end
 
   file "build/release/#{PROJECT[:name]}.elf": DEP_HASH[:release][:obj_path].keys do |task|
-    obj_files = DEP_HASH[:release][:obj_path].keys.join(' ')
+    obj_files = task.prerequisites.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
     map_file_path = "-Map=" + task.name.pathmap("%X.map")
     sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o #{task.name}"
