@@ -120,7 +120,7 @@ namespace :debug do
   # This ensures our dep files are regenerated when necessary.
   rule %r{/debug/dep/\w+\.mf} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
-    obj_path = task.name.pathmap('build/debug/obj/%n.o')
+    obj_path = task.name.pathmap("%{/dep/,/obj/}X.o")
     mcu_args = TARGET[:mcu_args].join(' ')
     debug_args = TARGET[:debug_args].join(' ')
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
@@ -157,7 +157,7 @@ namespace :release do
 
   rule %r{/release/dep/\w+\.mf} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
-    obj_path = task.name.pathmap('build/release/obj/%n.o')
+    obj_path = task.name.pathmap("%{/dep/,/obj/}X.o")
     mcu_args = TARGET[:mcu_args].join(' ')
     release_args = TARGET[:release_args].join(' ')
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
