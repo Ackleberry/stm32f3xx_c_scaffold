@@ -82,11 +82,6 @@ DEP_HASH = {
   }
 }
 
-get_src_path = lambda do |task_name|
-  obj = task_name.pathmap('build/debug/obj/%n.o')
-  DEP_HASH[:debug][:obj_path][obj]
-end
-
 task default: 'debug:hex'
 
 namespace :debug do
@@ -129,6 +124,11 @@ namespace :release do
   end
 end
 
+get_src_path = lambda do |task_name|
+  obj = task_name.pathmap('build/debug/obj/%n.o')
+  DEP_HASH[:debug][:obj_path][obj]
+end
+
 rule %r{/obj/\w+\.o} => get_src_path do |task|
   mkdir_p File.dirname(task.name) unless File.exist?(File.dirname(task.name))
   mcu_args = TARGET[:mcu_args].join(' ')
@@ -156,7 +156,7 @@ all_mf_files = DEP_HASH[:debug][:mf_path].keys + DEP_HASH[:release][:mf_path].ke
 all_mf_files.each do |dep|
   file dep
   puts "importing #{dep}"
-  import dep # dependency file is imported after the Rakefile is loaded, but before and tasks are run
+  import dep # dep file is imported after the Rakefile is loaded, but before and tasks are run
 end
 
 CLEAN.include(
