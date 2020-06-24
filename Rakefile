@@ -115,17 +115,6 @@ namespace :debug do
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
     sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
   end
-
-  # Use GCC to output dependencies. Read and append .mf dependencies.
-  # This ensures our dep files are regenerated when necessary.
-  rule %r{/debug/dep/\w+\.mf} => get_src_path do |task|
-    mkdir_p File.dirname(task.name)
-    obj_path = task.name.pathmap("%{/dep/,/obj/}X.o")
-    mcu_args = TARGET[:mcu_args].join(' ')
-    compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
-    compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
-    sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
-  end
 end
 
 namespace :release do
@@ -154,15 +143,17 @@ namespace :release do
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
     sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
   end
+end
 
-  rule %r{/release/dep/\w+\.mf} => get_src_path do |task|
-    mkdir_p File.dirname(task.name)
-    obj_path = task.name.pathmap("%{/dep/,/obj/}X.o")
-    mcu_args = TARGET[:mcu_args].join(' ')
-    compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
-    compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
-    sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
-  end
+# Use GCC to output dependencies. Read and append .mf dependencies.
+# This ensures our dep files are regenerated when necessary.
+rule %r{/dep/\w+\.mf} => get_src_path do |task|
+  mkdir_p File.dirname(task.name)
+  obj_path = task.name.pathmap("%{/dep/,/obj/}X.o")
+  mcu_args = TARGET[:mcu_args].join(' ')
+  compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
+  compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
+  sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
 end
 
 # Declare an explict file task for each dependency file. This will
