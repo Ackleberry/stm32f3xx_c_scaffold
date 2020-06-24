@@ -122,9 +122,9 @@ namespace :debug do
     mkdir_p File.dirname(task.name)
     obj_path = task.name.pathmap("%{/dep/,/obj/}X.o")
     mcu_args = TARGET[:mcu_args].join(' ')
-    debug_args = TARGET[:debug_args].join(' ')
+    compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
-    sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+    sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
   end
 end
 
@@ -159,9 +159,9 @@ namespace :release do
     mkdir_p File.dirname(task.name)
     obj_path = task.name.pathmap("%{/dep/,/obj/}X.o")
     mcu_args = TARGET[:mcu_args].join(' ')
-    release_args = TARGET[:release_args].join(' ')
+    compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
-    sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
+    sh "#{compiler} #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} -MF #{task.name} -MM -MP -MG -MT #{task.name} -MT #{obj_path} #{task.source}"
   end
 end
 
