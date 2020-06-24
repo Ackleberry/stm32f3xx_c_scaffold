@@ -107,14 +107,6 @@ namespace :debug do
     sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/debug/#{PROJECT[:name]}.elf"
     sh "#{TARGET[:size]} build/debug/#{PROJECT[:name]}.elf"
   end
-
-  rule %r{/debug/obj/\w+\.o} => get_src_path do |task|
-    mkdir_p File.dirname(task.name)
-    mcu_args = TARGET[:mcu_args].join(' ')
-    compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
-    compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
-    sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} #{task.source} -o #{task.name}"
-  end
 end
 
 namespace :release do
@@ -135,14 +127,14 @@ namespace :release do
     sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/release/#{PROJECT[:name]}.elf"
     sh "#{TARGET[:size]} build/release/#{PROJECT[:name]}.elf"
   end
+end
 
-  rule %r{/release/obj/\w+\.o} => get_src_path do |task|
-    mkdir_p File.dirname(task.name)
-    mcu_args = TARGET[:mcu_args].join(' ')
-    compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
-    compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
-    sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} #{task.source} -o #{task.name}"
-  end
+rule %r{/obj/\w+\.o} => get_src_path do |task|
+  mkdir_p File.dirname(task.name)
+  mcu_args = TARGET[:mcu_args].join(' ')
+  compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
+  compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
+  sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} #{task.source} -o #{task.name}"
 end
 
 # Use GCC to output dependencies. Read and append .mf dependencies.
