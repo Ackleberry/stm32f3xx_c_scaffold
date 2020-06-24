@@ -111,9 +111,9 @@ namespace :debug do
   rule %r{/debug/obj/\w+\.o} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     mcu_args = TARGET[:mcu_args].join(' ')
-    debug_args = TARGET[:debug_args].join(' ')
+    compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
-    sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{debug_args} #{task.source} -o #{task.name}"
+    sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} #{task.source} -o #{task.name}"
   end
 end
 
@@ -139,9 +139,9 @@ namespace :release do
   rule %r{/release/obj/\w+\.o} => get_src_path do |task|
     mkdir_p File.dirname(task.name)
     mcu_args = TARGET[:mcu_args].join(' ')
-    release_args = TARGET[:release_args].join(' ')
+    compiler_args = (task.name['/release/'] ? TARGET[:release_args] : TARGET[:debug_args]).join(' ')
     compiler = File.extname(task.source) == '.s' ? TARGET[:assembler] : TARGET[:compiler]
-    sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{release_args} #{task.source} -o #{task.name}"
+    sh "#{compiler} -c #{mcu_args} #{DEFINES} #{INCLUDES} #{compiler_args} #{task.source} -o #{task.name}"
   end
 end
 
