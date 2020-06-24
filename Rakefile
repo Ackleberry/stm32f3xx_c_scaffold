@@ -97,15 +97,15 @@ namespace :debug do
   task elf: "build/debug/#{PROJECT[:name]}.elf"
 
   file "build/debug/#{PROJECT[:name]}.hex": "build/debug/#{PROJECT[:name]}.elf" do |task|
-    sh "#{TARGET[:objcopy]} -O ihex build/debug/#{PROJECT[:name]}.elf build/debug/#{PROJECT[:name]}.hex"
+    sh "#{TARGET[:objcopy]} -O ihex #{task.source} #{task.name}"
   end
 
   file "build/debug/#{PROJECT[:name]}.elf": DEP_HASH[:debug][:obj_path].keys do |task|
     obj_files = DEP_HASH[:debug][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    map_file_path = "-Map=build/debug/#{PROJECT[:name]}.map"
-    sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/debug/#{PROJECT[:name]}.elf"
-    sh "#{TARGET[:size]} build/debug/#{PROJECT[:name]}.elf"
+    map_file_path = "-Map=" + task.name.pathmap("%X.map")
+    sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o #{task.name}"
+    sh "#{TARGET[:size]} #{task.name}"
   end
 end
 
@@ -117,15 +117,15 @@ namespace :release do
   task elf: "build/release/#{PROJECT[:name]}.elf"
 
   file "build/release/#{PROJECT[:name]}.hex": "build/release/#{PROJECT[:name]}.elf" do |task|
-    sh "#{TARGET[:objcopy]} -O ihex build/release/#{PROJECT[:name]}.elf build/release/#{PROJECT[:name]}.hex"
+    sh "#{TARGET[:objcopy]} -O ihex #{task.source} #{task.name}"
   end
 
   file "build/release/#{PROJECT[:name]}.elf": DEP_HASH[:release][:obj_path].keys do |task|
     obj_files = DEP_HASH[:release][:obj_path].keys.join(' ')
     mcu_args = TARGET[:mcu_args].join(' ')
-    map_file_path = "-Map=build/release/#{PROJECT[:name]}.map"
-    sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o build/release/#{PROJECT[:name]}.elf"
-    sh "#{TARGET[:size]} build/release/#{PROJECT[:name]}.elf"
+    map_file_path = "-Map=" + task.name.pathmap("%X.map")
+    sh "#{TARGET[:compiler]} #{obj_files} #{mcu_args} -T#{TARGET[:ld_script]} #{TARGET[:linker_args]}#{map_file_path} -o #{task.name}"
+    sh "#{TARGET[:size]} #{task.name}"
   end
 end
 
