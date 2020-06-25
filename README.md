@@ -1,4 +1,4 @@
-# Linux / WSL Instructions:
+# WSL Instructions:
 
 ## Prerequisites:
 
