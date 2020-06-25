@@ -86,16 +86,6 @@ namespace :debug do
   desc 'Link the object files and generate an ELF file'
   task elf: "build/debug/#{TARGET[:name]}.elf"
 
-  desc "Flash the target with the HEX image. Compatible with only an MBED enabled device. DRIVE=<mbed drive> must be provided."
-  task :mbed_flash do
-    rsp = `ls /mnt/#{ENV['DRIVE']}`
-    if rsp['MBED.HTM']
-      sh "cp ./build/debug/stm32f3xx_scaffold.hex /mnt/#{ENV['DRIVE']}"
-    else
-      puts "ERROR: Drive is not MBED enabled. Task cancelled."
-    end
-  end
-
   file "build/debug/#{TARGET[:name]}.hex": "build/debug/#{TARGET[:name]}.elf" do |task|
     sh "#{TARGET[:objcopy]} -O ihex #{task.source} #{task.name}"
   end
@@ -115,18 +105,6 @@ namespace :release do
 
   desc 'Link the object files and generate an ELF file'
   task elf: "build/release/#{TARGET[:name]}.elf"
-
-  desc "Sends mbed enabled programmer the HEX image to flash the target, DRIVE=<mbed drive> must be provided."
-  task :mbed_flash do
-    #sh "sudo mkdir /mnt/#{ENV['DRIVE']}" unless File.exist?("/mnt/#{ENV['DRIVE']}")
-    sh "sudo mount -t drvfs #{ENV['DRIVE']}: /mnt/#{ENV['DRIVE']}"
-    rsp = `ls /mnt/#{ENV['DRIVE']}`
-    if rsp['MBED.HTM']
-      sh "cp ./build/release/stm32f3xx_scaffold.hex /mnt/#{ENV['DRIVE']}"
-    else
-      puts "ERROR: Drive is not MBED enabled. Task cancelled."
-    end
-  end
 
   file "build/release/#{TARGET[:name]}.hex": "build/release/#{TARGET[:name]}.elf" do |task|
     sh "#{TARGET[:objcopy]} -O ihex #{task.source} #{task.name}"
