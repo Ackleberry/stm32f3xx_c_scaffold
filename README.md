@@ -22,5 +22,9 @@
 
 `rake --tasks`
 
+## To Flash:
+
+`rake <debug|release>:mbed_flash DRIVE=<mbed_drive>`
+
 
 
