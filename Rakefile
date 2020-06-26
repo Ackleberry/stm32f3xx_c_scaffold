@@ -48,7 +48,7 @@ INCLUDES = [
   '-IDrivers/STM32F3xx_HAL_Driver/Inc',
   '-IDrivers/CMSIS/Device/ST/STM32F3xx/Include',
   '-IDrivers/CMSIS/Include',
-].join(' ')
+]
 
 DEFINES = [
   '-DUSE_FULL_LL_DRIVER',
@@ -62,7 +62,7 @@ DEFINES = [
   '-DVDD_VALUE=3300',
   '-DPREFETCH_ENABLE=1',
   '-DSTM32F303xE'
-].join(' ')
+]
 
 task default: 'debug:hex'
 
