@@ -22,5 +22,17 @@
 
 `rake --tasks`
 
+# Acknowledgements:
+
+ADVI.CODES - [Rake Tutorials](https://avdi.codes/tag/rake)
+
+ElectronVector - [blog-rake-gcc-depends](https://github.com/ElectronVector/blog-rake-gcc-depends)
+
+ThrowTheSwitch - [arduino_c_scaffold](https://github.com/ThrowTheSwitch/arduino_c_scaffold)
+
+
+
+
+
 
 
