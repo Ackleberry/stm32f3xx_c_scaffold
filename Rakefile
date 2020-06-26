@@ -3,7 +3,7 @@ require 'rake/loaders/makefile'
 
 PREFIX = 'arm-none-eabi-'
 TARGET = {
-  name: 'stm32f3xx_scaffold',
+  name: 'stm32f3xx_c_scaffold',
   mcu_args: [
     '-mcpu=cortex-m4',
     '-mthumb',
