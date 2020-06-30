@@ -2,12 +2,12 @@
 namespace :stlink do
   namespace :flash do
     desc "Flashes the debug HEX file onto the target"
-    task :debug do
+    task debug: 'debug:hex' do
       sh "st-flash --format ihex write build/debug/#{TARGET[:name]}.hex"
     end
 
     desc "Flashes the release HEX file onto the target"
-    task :release do
+    task release: 'release:hex' do
       sh "st-flash --format ihex write build/release/#{TARGET[:name]}.hex"
     end
   end
