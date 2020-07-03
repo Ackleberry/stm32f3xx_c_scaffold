@@ -159,7 +159,6 @@ void SystemClock_Config(void)
   */
 static void MX_GPIO_Init(void)
 {
-  LL_EXTI_InitTypeDef EXTI_InitStruct = {0};
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
@@ -170,23 +169,6 @@ static void MX_GPIO_Init(void)
 
   /**/
   LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin);
-
-  /**/
-  LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTC, LL_SYSCFG_EXTI_LINE13);
-
-  /**/
-  LL_GPIO_SetPinPull(B1_GPIO_Port, B1_Pin, LL_GPIO_PULL_NO);
-
-  /**/
-  LL_GPIO_SetPinMode(B1_GPIO_Port, B1_Pin, LL_GPIO_MODE_INPUT);
-
-  /**/
-  EXTI_InitStruct.Line_0_31 = LL_EXTI_LINE_13;
-  EXTI_InitStruct.Line_32_63 = LL_EXTI_LINE_NONE;
-  EXTI_InitStruct.LineCommand = ENABLE;
-  EXTI_InitStruct.Mode = LL_EXTI_MODE_IT;
-  EXTI_InitStruct.Trigger = LL_EXTI_TRIGGER_FALLING;
-  LL_EXTI_Init(&EXTI_InitStruct);
 
   /**/
   GPIO_InitStruct.Pin = USART_TX_Pin|USART_RX_Pin;
