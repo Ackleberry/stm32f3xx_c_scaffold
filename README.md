@@ -1,4 +1,6 @@
-# Windows Instructions:
+# Getting Started
+
+## Windows Setup Instructions:
 
 1. Install [Ruby](https://rubyinstaller.org/)
 
@@ -6,21 +8,59 @@
 
     `gem install rake`
 
-3. Install [Arm GCC](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads). Ensure the path to ..\9 2020-q2-update\bin is added to your PATH system environment variable.
+3. Install [Arm GCC](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads). Ensure the path to `arm-none-eabi-gcc.exe` is added to your PATH system environment variable.
 
-4. Verify arm-none-eabi-gcc command is recognized:
+4. Verify arm-none-eabi-gcc command is recognized in command prompt:
 
     `arm-none-eabi-gcc --version`
 
-5. Install [ST-LINK](https://github.com/stlink-org/stlink/releases/). Ensure the path to ..\stlink-1.6.1-x86_64-w64-mingw32\bin is added to your PATH system environment variable.
+5. Install [ST-LINK](https://github.com/stlink-org/stlink/releases/). Ensure the path to `st-flash.exe` is added to your PATH system environment variable.
 
-6. Verify st-flash command is recognized:
+6. Verify st-flash command is recognized in command prompt:
 
     `st-flash --version`
 
-## List All Tasks:
+## OSX
 
-`rake --tasks`
+    TBD
+
+## Linux
+
+    TBD
+
+
+# List All Tasks:
+
+    `rake --tasks`
+
+# Example:
+
+Build debug HEX image:
+
+    `rake debug:hex`
+
+Flash debug HEX image to target:
+
+    `rake stlink:flash:debug`
+
+# Porting Scaffold to Other STM32Fx Targets
+
+While STM32F303RE is the defaulted target, you can use STMCubeMX to generage code for any other STM32Fx device. See the `.ioc` project file in the repository. After generating code with STMCubeMX, refer to the table below to copy the content from the generated makefile to the pre-existing rakefile.
+
+| Makefile | Rakefile |
+|-|-|
+| C_SOURCES | SOURCES |
+| ASM_SOURCES | SOURCES |
+| C_INCLUDES | INCLUDES |
+| C_DEFS | DEFINES |
+| MCU | TARGET[:mcu_args] |
+| FPU | TARGET[:mcu_args] |
+| FLOAT-ABI | TARGET[:mcu_args] |
+| LDSCRIPT | TARGET[:ld_script] |
+
+# Licensing:
+
+Please note this projects LICENSE does not cover anything included in the `drivers` folder. Please refer the specific drivers LICENSE file.
 
 # Acknowledgements:
 
