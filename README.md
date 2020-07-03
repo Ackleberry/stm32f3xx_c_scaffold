@@ -58,6 +58,8 @@ While STM32F303RE is the defaulted target, you can use STMCubeMX to generage cod
 | FLOAT-ABI | TARGET[:mcu_args] |
 | LDSCRIPT | TARGET[:ld_script] |
 
+Once the Rakefile works you can remove the Makefile from the project.
+
 # Licensing:
 
 Please note this projects LICENSE does not cover anything included in the `drivers` folder. Please refer the specific drivers LICENSE file.
