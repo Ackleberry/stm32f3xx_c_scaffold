@@ -45,7 +45,7 @@ Flash debug HEX image to target:
 
 # Porting Scaffold to Other STM32Fx Targets
 
-While STM32F303RE is the defaulted target, you can use STMCubeMX to generage code for any other STM32Fx device. See the `.ioc` project file in the repository. After generating code with STMCubeMX, refer to the table below to copy the variable content from the generated Makefile to the variable in the Rakefile.
+While STM32F303RE is the defaulted target, you can use STMCubeMX to generate code for any other STM32Fx device. See the `.ioc` project file in the repository. After generating code with STMCubeMX, refer to the table below to copy the variable content from the generated Makefile to the variable in the Rakefile.
 
 | Makefile | Rakefile |
 |-|-|
