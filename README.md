@@ -31,17 +31,17 @@
 
 # List All Tasks:
 
-    `rake --tasks`
+    rake --tasks
 
 # Example:
 
 Build debug HEX image:
 
-    `rake debug:hex`
+    rake debug:hex
 
 Flash debug HEX image to target:
 
-    `rake stlink:flash:debug`
+    rake stlink:flash:debug
 
 # Porting Scaffold to Other STM32Fx Targets
 
