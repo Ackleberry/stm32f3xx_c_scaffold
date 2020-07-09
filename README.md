@@ -1,4 +1,12 @@
-# Getting Started
+# About:
+
+This is an Stm32 project template that uses Rake, rather than Make, for its build tool.
+
+# Why switch to Rake?:
+
+Rake is an **internal** Domain Specific Language (DSL) which gives it an advantage to traditional build tools like Make. Rake has the full power of the Ruby programming language behind it. This allows you to easily integrate interesting tasks and scripts into your project. Consolidating your build tool into a general purpose programming language means easier installation, unified functionality, and one less language to remember.
+
+# Getting Started:
 
 ## Windows Setup Instructions:
 
@@ -20,13 +28,13 @@
 
     `st-flash --version`
 
-## OSX
+## OSX Setup Instructions:
 
-    TBD
+TBD
 
-## Linux
+## Linux Setup Instructions:
 
-    TBD
+TBD
 
 
 # List All Tasks:
@@ -43,7 +51,7 @@ Flash debug HEX image to target:
 
     rake stlink:flash:debug
 
-# Porting Scaffold to Other STM32Fx Targets
+# Porting Scaffold to Other STM32Fx Targets:
 
 While STM32F303RE is the defaulted target, you can use STMCubeMX to generate code for any other STM32Fx device. See the `.ioc` project file in the repository. After generating code with STMCubeMX, refer to the table below to copy the variable content from the generated Makefile to the variable in the Rakefile.
 
