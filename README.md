@@ -22,7 +22,7 @@ Rake is an **internal** Domain Specific Language (DSL) which gives it an advanta
 
     `arm-none-eabi-gcc --version`
 
-5. Install [ST-LINK](https://github.com/stlink-org/stlink/releases/). Ensure the path to `st-flash.exe` is added to your PATH system environment variable.
+5. Install [ST-Link](https://github.com/stlink-org/stlink/releases/). Ensure the path to `st-flash.exe` is added to your PATH system environment variable.
 
 6. Verify st-flash command is recognized in command prompt:
 
@@ -34,7 +34,21 @@ TBD
 
 ## Linux Setup Instructions:
 
-TBD
+1. Install Ruby:
+
+    `sudo apt install ruby`
+
+2. Install latest Ruby Rake gem:
+
+    `sudo gem install rake`
+
+3. Install Arm GCC:
+
+    `sudo apt install gcc-arm-none-eabi`
+
+4. Install ST-Link:
+
+    `sudo apt install stlink-tools`
 
 
 # List All Tasks:
