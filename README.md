@@ -69,7 +69,7 @@ The target should now blink its LED to verify correct functionality.
 
 # Porting Scaffold to Other STM32Fx Targets:
 
-While STM32F303RE is the defaulted target, you can use STMCubeMX to generate code for any other STM32Fx device. See the `.ioc` project file in the repository. After generating code with STMCubeMX, refer to the table below to copy the variable content from the generated Makefile to the variable in the Rakefile.
+STM32F303RE is the defaulted target. The `.ioc` file in the project allows you to generate additional code for this device. STM32CubeMX can also generate code for any other STM32Fx device. After generating a new project with STM32CubeMX, copy the `Rakefile` and `rakelib` folder to the new directory. Then refer to the table below to copy the variables from the new projects Makefile to the Rakefile. 
 
 | Makefile | Rakefile |
 |-|-|
